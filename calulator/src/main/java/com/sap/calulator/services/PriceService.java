@@ -98,32 +98,29 @@ public class PriceService {
 		return vmRetailPrice;
 	}
 	
-public double getStoragePrice(String armRegionName, String productName, String priceType, String reservationTerm) throws Exception {
+public double getHanaStoragePrice(String armRegionName, String meterName) throws Exception {
 		
-		logger.info("getStoragePrice {} {}",armRegionName,productName);
+		logger.info("getStoragePrice {} {}",armRegionName,meterName);
 		StringBuilder buildUrl = new StringBuilder();
 		buildUrl.append("https://prices.azure.com/api/retail/prices?$filter=serviceName eq 'Storage' ");
 		double vmRetailPrice = 0.0;
+		
 		if(armRegionName!=null) {
 			buildUrl.append(" and armRegionName eq '");
 			buildUrl.append(armRegionName);
 			buildUrl.append("'");
 		}
-		if(productName!=null) {
-			buildUrl.append(" and productName eq '");
-			buildUrl.append(productName);
+		
+		buildUrl.append(" and productName eq '");
+		buildUrl.append("Premium SSD Managed Disks");
+		buildUrl.append("'");
+		
+		if (meterName!=null) {
+			buildUrl.append(" and meterName eq '");
+			buildUrl.append(meterName);
+			buildUrl.append(" LRS Disk");
 			buildUrl.append("'");
-		}
-		if (priceType!=null) {
-			buildUrl.append(" and priceType eq '");
-			buildUrl.append(priceType);
-			buildUrl.append("'");
-			if (priceType.equalsIgnoreCase("Reservation")) {
-				buildUrl.append(" and reservationTerm eq '");
-				buildUrl.append(reservationTerm);
-				buildUrl.append("'");
-			}
-			
+						
 		}
 		String url = buildUrl.toString();
 		
@@ -138,19 +135,9 @@ public double getStoragePrice(String armRegionName, String productName, String p
 		if (items!= null && items.size()>0) {
 			Item item = items.get(0);
 			
-			if (priceType.equalsIgnoreCase("Reservation")) {
-				String reservTerm = item.getReservationTerm();
-				long reservTermValue =1;
-				if(reservTerm!=null && reservTerm.length()>0) {
-					reservTermValue = Long.parseLong(""+reservTerm.charAt(0));
-				}
-				vmRetailPrice = item.getRetailPrice()/ reservTermValue;
-				vmRetailPrice = vmRetailPrice / 12;
-			}
-			else {
-				vmRetailPrice = item.getRetailPrice();
-			}
-			System.out.println("Retail productName : "+ productName + " Price : " + vmRetailPrice);
+			vmRetailPrice = item.getRetailPrice();
+			
+			System.out.println("Retail productName : "+ meterName + " Price : " + vmRetailPrice);
 		}
 	    
 		

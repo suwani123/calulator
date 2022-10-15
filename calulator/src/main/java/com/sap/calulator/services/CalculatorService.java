@@ -11,9 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.sap.calulator.entities.HanaDBStorage;
 import com.sap.calulator.entities.VmData;
+import com.sap.calulator.repositories.HanaDBStorageRepository;
 import com.sap.calulator.repositories.VmDataRepository;
 import com.sap.calulator.responses.CalculateBestAppResponse;
+import com.sap.calulator.responses.CalculateBestHanaStorageResponse;
 
 @Service
 public class CalculatorService {
@@ -21,6 +24,8 @@ public class CalculatorService {
 	private Logger logger;
 	//private MetaDataRepository metaDataRepository;
 	private VmDataRepository vmDataRepository;
+	
+	private HanaDBStorageRepository hanaDBStorageRepository;
 	// Declaring the static map
     private static Map<String,Double> MAP=new HashMap<String, Double>();
     
@@ -28,11 +33,12 @@ public class CalculatorService {
     
     
 	@Autowired
-	public CalculatorService(VmDataRepository vmDataRepository,RestTemplate restTemplate) {
+	public CalculatorService(VmDataRepository vmDataRepository, HanaDBStorageRepository hanaDBStorageRepository, RestTemplate restTemplate) {
 		this.logger=LoggerFactory.getLogger(this.getClass());
 		//this.metaDataRepository=metaDataRepository;
 		this.vmDataRepository = vmDataRepository;
 		this.restTemplate = restTemplate;
+		this.hanaDBStorageRepository = hanaDBStorageRepository;
 	}
 	
 	
@@ -175,6 +181,76 @@ public CalculateBestAppResponse returnAppResponse(long vcpu, long memory,String 
 		throw new Exception();
 	}
 	
+}
+	
+public CalculateBestHanaStorageResponse returnHanaStorageResponse(String vmName, long memory, String armRegionName) throws Exception {
+		
+		PriceService priceService = new PriceService(restTemplate);
+		
+		CalculateBestHanaStorageResponse response=new CalculateBestHanaStorageResponse();
+	
+		logger.info("SERVICE_LAYER {} {}",memory);
+		HanaDBStorage hanaStorage= hanaDBStorageRepository.findByVmNameAndMemory(vmName, memory);
+		/**Remove this to call the rest API to get the price
+		MAP.put("M64s",1974.89);
+		MAP.put("M64Sv2",1919.67);
+		MAP.put("M64Dsv2",1982.19);**/
+		
+		if(hanaStorage!= null && hanaStorage.getHanaDataSku()!=null ) {
+			//String armRegionName, String armSkuName, String priceType,String reservationTerm
+			//String vmName = hanaStorage.getVmName();
+			double priceHanaDataVal = priceService.getHanaStoragePrice(armRegionName, hanaStorage.getHanaDataSku());
+			MAP.put(hanaStorage.getHanaDataSku(),priceHanaDataVal);
+			response.setHanaDataPrice(priceHanaDataVal * hanaStorage.getHanaDataCount());
+			response.setHanaDataSku(hanaStorage.getHanaDataSku());
+			response.setHanaDataCount(hanaStorage.getHanaDataCount());
+			
+		}
+		if(hanaStorage!= null && hanaStorage.getHanaLogSku()!=null ) {
+			//String armRegionName, String armSkuName, String priceType,String reservationTerm
+			//String vmName = hanaStorage.getVmName();
+			double priceHanaLogVal = priceService.getHanaStoragePrice(armRegionName, hanaStorage.getHanaLogSku());
+			MAP.put(hanaStorage.getHanaLogSku(),priceHanaLogVal);
+			response.setHanaLogPrice(priceHanaLogVal * hanaStorage.getHanaLogCount());
+			response.setHanaLogSku(hanaStorage.getHanaLogSku());
+			response.setHanaLogCount(hanaStorage.getHanaLogCount());
+			
+		}
+		if(hanaStorage!= null && hanaStorage.getHanaRootSku()!=null ) {
+			//String armRegionName, String armSkuName, String priceType,String reservationTerm
+			//String vmName = hanaStorage.getVmName();
+			double priceHanaRootVal = priceService.getHanaStoragePrice(armRegionName, hanaStorage.getHanaRootSku());
+			MAP.put(hanaStorage.getHanaRootSku(),priceHanaRootVal);
+			response.setHanaRootPrice(priceHanaRootVal * hanaStorage.getHanaRootCount());
+			response.setHanaRootSku(hanaStorage.getHanaRootSku());
+			response.setHanaRootCount(hanaStorage.getHanaRootCount());
+			
+		}
+		if(hanaStorage!= null && hanaStorage.getHanaSapSku()!=null ) {
+			//String armRegionName, String armSkuName, String priceType,String reservationTerm
+			//String vmName = hanaStorage.getVmName();
+			double priceHanaSapVal = priceService.getHanaStoragePrice(armRegionName, hanaStorage.getHanaSapSku());
+			MAP.put(hanaStorage.getHanaSapSku(),priceHanaSapVal);
+			response.setHanaSapPrice(priceHanaSapVal * hanaStorage.getHanaSapCount());
+			response.setHanaSapSku(hanaStorage.getHanaSapSku());
+			response.setHanaSapCount(hanaStorage.getHanaSapCount());
+	
+		}
+		if(hanaStorage!= null && hanaStorage.getHanaSharedSku()!=null ) {
+			//String armRegionName, String armSkuName, String priceType,String reservationTerm
+			//String vmName = hanaStorage.getVmName();
+			double priceHanaSharedVal = priceService.getHanaStoragePrice(armRegionName, hanaStorage.getHanaSharedSku());
+			MAP.put(hanaStorage.getHanaSharedSku(),priceHanaSharedVal);
+			response.setHanaSharedPrice(priceHanaSharedVal * hanaStorage.getHanaSharedCount());
+			response.setHanaSharedSku(hanaStorage.getHanaSharedSku());
+			response.setHanaSharedCount(hanaStorage.getHanaSharedCount());
+			
+		}
+		response.setVmName(vmName);
+		response.setMemory(memory);	
+		
+		
+		return response;
 }
 	
 	/**

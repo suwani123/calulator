@@ -10,23 +10,29 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import com.sap.calulator.requests.CalculateBestAppRequest;
+import com.sap.calulator.requests.CalculateBestHanaStorageRequest;
 //import com.sap.calulator.requests.CalculateBestVMRequest;
 import com.sap.calulator.responses.CalculateBestAppResponse;
 import com.sap.calulator.services.CalculatorService;
+import com.sap.calulator.services.ExcelReadService;
 
 @RestController
 public class CalculatorController {
 
 	private Logger logger;
 	private CalculatorService calculatorService;
+	private ExcelReadService excelReadService;
+	
 	
 	@Autowired
-	public CalculatorController(CalculatorService calculatorService) {
+	public CalculatorController(CalculatorService calculatorService, ExcelReadService excelReadService) {
 		this.logger=LoggerFactory.getLogger(this.getClass());
 		this.calculatorService=calculatorService;
+		this.excelReadService = excelReadService;
 	}
-	
+	 
 	
 	@PostMapping(value = "/calculateApp")
 	public Map<String, Object> returnBestApp(@RequestBody CalculateBestAppRequest request){
@@ -64,15 +70,15 @@ public class CalculatorController {
 	}
 	
 	@PostMapping(value = "/calculateStorage")
-	public Map<String, Object> returnBestStorage(@RequestBody CalculateBestAppRequest request){
+	public Map<String, Object> returnBestStorage(@RequestBody CalculateBestHanaStorageRequest request){
 		logger.info("CONTROLLER_LAYER REQUEST {}",request.toString());
 		Map<String, Object> response=new HashMap<String, Object>();
 		
 		try {
 			response.put("STATUS", "SUCCESS");
-			response.put("DATA", calculatorService.returnHanaDBResponse(request.getMemory(), request.getArmRegionName(),
-					request.getPriceType(), request.getReservationTerm(),request.getUsage()));
-		} catch (Exception e) {
+			response.put("DATA", calculatorService.returnHanaStorageResponse(request.getVmName(),request.getMemory(),request.getArmRegionName()));
+		} 
+		catch (Exception e) {
 			logger.error("CONTROLLER_LAYER {} {}",request.toString(),e.getMessage());
 			response.put("STATUS", "FAILED");
 			response.put("MESSAGE", e.getMessage());
