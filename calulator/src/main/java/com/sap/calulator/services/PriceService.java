@@ -36,7 +36,7 @@ public class PriceService {
 	}
 	
 	
-	public double getVmPrice(String armRegionName, String armSkuName, String priceType,String reservationTerm,double usage) throws Exception {
+	public double getVmPrice(String armRegionName, String armSkuName,String vmName, String priceType,String reservationTerm,double usage) throws Exception {
 		
 		logger.info("SERVICE_LAYER {} {}",armRegionName,armSkuName);
 		StringBuilder buildUrl = new StringBuilder();
@@ -52,6 +52,14 @@ public class PriceService {
 			armSkuName = armSkuName.replace("(", "");
 			armSkuName = armSkuName.replace(")", "");
 			buildUrl.append(armSkuName);
+			buildUrl.append("'");
+		}
+		if(vmName!=null) {
+			buildUrl.append(" and meterName eq '");
+			String first = vmName.substring(0,vmName.length() - 1);
+			String last = vmName.substring(vmName.length() - 1,vmName.length());
+			
+			buildUrl.append(first + " "+ last);
 			buildUrl.append("'");
 		}
 		if (priceType!=null) {

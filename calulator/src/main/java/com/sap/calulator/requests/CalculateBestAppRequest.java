@@ -23,7 +23,7 @@ public class CalculateBestAppRequest {
 	}
 	@Override
 	public String toString() {
-		return "CalculateBestVMRequest [vcpu=" + vcpu + ", memory=" + memory + "]";
+		return "CalculateBestVMRequest [vcpu=" + vcpu + ", memory=" + memory + ", priceType=\" + priceType + \"]";
 	}
 	public String getArmRegionName() {
 		return armRegionName;

@@ -58,7 +58,8 @@ public CalculateBestAppResponse returnAppResponse(long vcpu, long memory,String 
 		for(int i=0; i<metaDataList.size(); i++) {
 			//String armRegionName, String armSkuName, String priceType,String reservationTerm
 			String armSkuName = ((VmData)metaDataList.get(i)).getVmType();
-			double priceVal = priceService.getVmPrice(armRegionName,armSkuName , priceType, reservationTerm, usage);
+			String vmName = ((VmData)metaDataList.get(i)).getVmName();
+			double priceVal = priceService.getVmPrice(armRegionName,armSkuName, vmName , priceType, reservationTerm, usage);
 			MAP.put(((VmData)metaDataList.get(i)).getVmName(),priceVal);
 		}
 	    
@@ -128,7 +129,8 @@ public CalculateBestAppResponse returnAppResponse(long vcpu, long memory,String 
 		for(int i=0; i<metaDataList.size(); i++) {
 			//String armRegionName, String armSkuName, String priceType,String reservationTerm
 			String armSkuName = ((VmData)metaDataList.get(i)).getVmType();
-			double priceVal = priceService.getVmPrice(armRegionName,armSkuName , priceType, reservationTerm, usage);
+			String vmName = ((VmData)metaDataList.get(i)).getVmName();
+			double priceVal = priceService.getVmPrice(armRegionName,armSkuName, vmName , priceType, reservationTerm, usage);
 			MAP.put(((VmData)metaDataList.get(i)).getVmName(),priceVal);
 		}
 		
