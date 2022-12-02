@@ -56,24 +56,31 @@ public class PriceService {
 		}
 		if(vmName!=null) {
 			buildUrl.append(" and meterName eq '");
-			String first = vmName.substring(0,vmName.length() - 1);
-			String last = vmName.substring(vmName.length() - 1,vmName.length());
+			//String first = vmName.substring(0,vmName.length() - 2);
+			//String last = vmName.substring(vmName.length() - 2,vmName.length());
 			
-			buildUrl.append(first + " "+ last);
+			buildUrl.append(vmName);
 			buildUrl.append("'");
 		}
-		if (priceType!=null) {
+		if (priceType!=null && priceType.equals("PAYG") ) {
 			buildUrl.append(" and priceType eq '");
-			buildUrl.append(priceType);
-			buildUrl.append("'");
-			if (priceType.equalsIgnoreCase("Reservation")) {
-				buildUrl.append(" and reservationTerm eq '");
-				buildUrl.append(reservationTerm);
-				buildUrl.append("'");
-			}
+			buildUrl.append("Consumption");
+			buildUrl.append("'");		
 			
+		}
+		else {
+			
+			buildUrl.append(" and priceType eq '");
+			buildUrl.append("Reservation");
+			buildUrl.append("'");
+			
+			buildUrl.append(" and reservationTerm eq '");
+			buildUrl.append(reservationTerm);
+			buildUrl.append("'");
+		
 		}
 		String url = buildUrl.toString();
+		//System.out.println("url: " + url);
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -99,7 +106,7 @@ public class PriceService {
 				vmRetailPrice = item.getRetailPrice()* 730;
 				vmRetailPrice = vmRetailPrice * usage;
 			}
-			System.out.println("Retail SKU : "+ armSkuName + " Price : " + vmRetailPrice);
+			//System.out.println("Retail SKU : "+ armSkuName + " Price : " + vmRetailPrice);
 		}
 	    
 		
@@ -145,7 +152,7 @@ public double getHanaStoragePrice(String armRegionName, String meterName) throws
 			
 			vmRetailPrice = item.getRetailPrice();
 			
-			System.out.println("Retail productName : "+ meterName + " Price : " + vmRetailPrice);
+			//System.out.println("Retail productName : "+ meterName + " Price : " + vmRetailPrice);
 		}
 	    
 		

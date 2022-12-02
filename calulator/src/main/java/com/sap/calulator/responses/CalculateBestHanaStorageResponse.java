@@ -30,6 +30,17 @@ public class CalculateBestHanaStorageResponse {
 				+ ", hanaRootPrice=" + hanaRootPrice + ", hanaSapSku=" + hanaSapSku + ", hanaSapCount=" + hanaSapCount
 				+ ", hanaSapPrice=" + hanaSapPrice + "]";
 	}
+	
+	public String toRecord() {
+		return ","+ hanaDataSku + "," + hanaDataCount + "," + hanaLogSku +","
+				+hanaLogCount+ "," + hanaSharedSku+"," +hanaSharedCount +"," + hanaRootSku +"," + hanaRootCount+","
+				+hanaSapSku + "," + hanaSapCount;
+	}
+	
+	public double toValue() {
+		return 0.0+ (hanaDataCount*hanaDataPrice)+(hanaLogCount*hanaLogPrice)+(hanaSharedCount*hanaSharedPrice)+
+				(hanaRootCount*hanaRootPrice)+(hanaSapCount*hanaSapPrice);
+	}
 	public String getVmName() {
 		return vmName;
 	}

@@ -54,18 +54,21 @@ public CalculateBestAppResponse returnAppResponse(long vcpu, long memory,String 
 		MAP.put("E8Dsv4",191.08);
 		MAP.put("E8DSv5",193.14);
 		MAP.put("E8adsv5",176.47);**/
+		CalculateBestAppResponse response=new CalculateBestAppResponse();
 		
-		for(int i=0; i<metaDataList.size(); i++) {
-			//String armRegionName, String armSkuName, String priceType,String reservationTerm
-			String armSkuName = ((VmData)metaDataList.get(i)).getVmType();
-			String vmName = ((VmData)metaDataList.get(i)).getVmName();
-			double priceVal = priceService.getVmPrice(armRegionName,armSkuName, vmName , priceType, reservationTerm, usage);
-			MAP.put(((VmData)metaDataList.get(i)).getVmName(),priceVal);
-		}
 	    
 		if(!metaDataList.isEmpty()) {
 			logger.info("DATABASE_RESPONSE {}",metaDataList.toString());
-			CalculateBestAppResponse response=new CalculateBestAppResponse();
+			
+			
+			for(int i=0; i<metaDataList.size(); i++) {
+				//String armRegionName, String armSkuName, String priceType,String reservationTerm
+				String armSkuName = ((VmData)metaDataList.get(i)).getVmType();
+				String vmName = ((VmData)metaDataList.get(i)).getVmName();
+				//System.out.println("armSkuName: " + armSkuName + " vmName: " + vmName);
+				double priceVal = priceService.getVmPrice(armRegionName,armSkuName, vmName , priceType, reservationTerm, usage);
+				MAP.put(((VmData)metaDataList.get(i)).getVmName(),priceVal);
+			}
 
 			if(metaDataList.size()>1) {
 				//if more than 1 type of VM available get the lowest price one
@@ -110,7 +113,7 @@ public CalculateBestAppResponse returnAppResponse(long vcpu, long memory,String 
 			
 			// check the CPU utilization 
 			logger.error("SERVICE_LAYER DATABSE LIST IS EMPTY");
-			throw new Exception();
+			return response;
 		}
 		
 	}
